@@ -1,23 +1,26 @@
 package ximg
 
 import (
-	"errors"
 	"image"
 	"image/color"
 	"image/draw"
 )
 
 // New wraps an image.Image into an Ximg, converting to RGBA if needed.
-func New(image image.Image) *Ximg {
+func New(image image.Image) (*Ximg, error) {
+	if image == nil {
+		return nil, ErrInputImageIsNil
+	}
 	return &Ximg{
 		RGBA:   *imageToRGBA(image),
 		isGray: false,
-	}
+	}, nil
 }
 
 // NewRGBA creates a new blank RGBA image with the given dimensions.
 func NewRGBA(width, height int) *Ximg {
-	return New(image.NewRGBA(image.Rect(0, 0, width, height)))
+	ximg, _ := New(image.NewRGBA(image.Rect(0, 0, width, height)))
+	return ximg
 }
 
 // NewFromRGB combines three single-channel images into a color image.
@@ -28,7 +31,7 @@ func NewFromRGB(red, green, blue *Ximg) (*Ximg, error) {
 	wg, hg := green.Size()
 	wb, hb := blue.Size()
 	if (wg != width) || (hg != height) || (wb != width) || (hb != height) {
-		return nil, errors.New("input images should have the same size")
+		return nil, ErrInputImagesNotSameSize
 	}
 
 	for y := range height {

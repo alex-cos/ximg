@@ -6,6 +6,8 @@ vendor
 tmp
 output
 
+**/Thumbs.db
+
 # Editor directories and files
 .idea
 .vscode/*

@@ -9,7 +9,7 @@ import (
 func (img *Ximg) Apply(stride int, applyFunc ApplyFunc, opts *Options) *Ximg {
 	w, h := img.Size()
 	s := stride
-	if s < 0 {
+	if s <= 0 {
 		s = 1
 	}
 	ximg := NewRGBA(w/s, h/s)

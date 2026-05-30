@@ -22,7 +22,7 @@ func Load(filename string) (*Ximg, error) {
 	if err != nil {
 		return nil, err
 	}
-	return New(img), nil
+	return New(img)
 }
 
 // Save encodes the image to a file. Supported formats: .jpg/.jpeg, .png, .gif.

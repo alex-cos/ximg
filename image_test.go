@@ -251,7 +251,8 @@ func TestNewFromImage(t *testing.T) {
 	t.Parallel()
 
 	src := image.NewRGBA(image.Rect(0, 0, 3, 3))
-	img := ximg.New(src)
+	img, err := ximg.New(src)
+	assert.NoError(t, err)
 	w, h := img.Size()
 	assert.Equal(t, 3, w)
 	assert.Equal(t, 3, h)

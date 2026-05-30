@@ -44,7 +44,7 @@ func (img *Ximg) Split(width, shift int) []*Ximg {
 				Min: image.Point{X: x, Y: y},
 				Max: image.Point{X: x + width, Y: y + width},
 			}
-			ximg := New(img.SubImage(r))
+			ximg, _ := New(img.SubImage(r))
 			ximg.isGray = img.isGray
 			images = append(images, ximg)
 		}
@@ -189,49 +189,23 @@ func (img *Ximg) MaxPool(incr int) *Ximg {
 }
 
 // Normalize stretches the histogram to [minimum, maximum].
-func (img *Ximg) Normalize(minimum, maximmum uint8) *Ximg {
-	rMin := uint8(255)
-	rMax := uint8(0)
-	gMin := uint8(255)
-	gMax := uint8(0)
-	bMin := uint8(255)
-	bMax := uint8(0)
+func (img *Ximg) Normalize(minimum, maximum uint8) *Ximg {
 	w, h := img.Size()
 	ximg := NewRGBA(w, h)
 
-	for x := range w {
-		for y := range h {
-			r, g, b := img.RGBAt(x, y)
-			if r < rMin {
-				rMin = r
-			}
-			if r > rMax {
-				rMax = r
-			}
-			if g < gMin {
-				gMin = g
-			}
-			if g > gMax {
-				gMax = g
-			}
-			if b < bMin {
-				bMin = b
-			}
-			if b > bMax {
-				bMax = b
-			}
-		}
-	}
+	rMin, rMax := minMaxChannel(w, h, func(x, y int) uint8 { r, _, _ := img.RGBAt(x, y); return r })
+	gMin, gMax := minMaxChannel(w, h, func(x, y int) uint8 { _, g, _ := img.RGBAt(x, y); return g })
+	bMin, bMax := minMaxChannel(w, h, func(x, y int) uint8 { _, _, b := img.RGBAt(x, y); return b })
+
 	for x := range w {
 		for y := range h {
 			r, g, b, a := img.RGBAAt(x, y)
-			color := color.RGBA{
-				uint8(float64(r-rMin)*float64(maximmum-minimum)/float64(rMax-rMin) + float64(minimum)),
-				uint8(float64(g-gMin)*float64(maximmum-minimum)/float64(gMax-gMin) + float64(minimum)),
-				uint8(float64(b-bMin)*float64(maximmum-minimum)/float64(bMax-bMin) + float64(minimum)),
+			ximg.Set(x, y, color.RGBA{
+				rescaleU8(r, rMin, rMax, minimum, maximum),
+				rescaleU8(g, gMin, gMax, minimum, maximum),
+				rescaleU8(b, bMin, bMax, minimum, maximum),
 				a,
-			}
-			ximg.Set(x, y, color)
+			})
 		}
 	}
 	ximg.isGray = img.isGray
@@ -249,10 +223,10 @@ func (img *Ximg) Merge(with *Ximg) *Ximg {
 			r1, g1, b1, a1 := img.RGBAAt(x, y)
 			r2, g2, b2, a2 := with.RGBAAt(x, y)
 			color := color.RGBA{
-				uint8(float64(r1) + float64(r2)/2),
-				uint8(float64(g1) + float64(g2)/2),
-				uint8(float64(b1) + float64(b2)/2),
-				uint8(float64(a1) + float64(a2)/2),
+				uint8((float64(r1) + float64(r2)) / 2),
+				uint8((float64(g1) + float64(g2)) / 2),
+				uint8((float64(b1) + float64(b2)) / 2),
+				uint8((float64(a1) + float64(a2)) / 2),
 			}
 			ximg.Set(x, y, color)
 		}

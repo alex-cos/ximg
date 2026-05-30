@@ -290,7 +290,10 @@ func (img *Ximg) Sobel2() *Ximg {
 		hg, _, _ := sHori.RGBAt(x, y)
 		vg, _, _ := sVert.RGBAt(x, y)
 
-		a := math.Atan(float64(vg)/float64(hg)) * 180.0 / math.Pi
+		a := math.Atan2(float64(vg), float64(hg)) * 180.0 / math.Pi
+		if a < 0 {
+			a += 180.0
+		}
 
 		switch {
 		case (a >= 0 && a < 22.5) || (a >= 157.5 && a <= 180):

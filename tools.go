@@ -117,6 +117,31 @@ func bitReverse[C Complex](a []C) []C {
 	return a
 }
 
+func minMaxChannel(w, h int, pixelAt func(int, int) uint8) (uint8, uint8) {
+	mn := uint8(255)
+	mx := uint8(0)
+	for x := range w {
+		for y := range h {
+			v := pixelAt(x, y)
+			if v < mn {
+				mn = v
+			}
+			if v > mx {
+				mx = v
+			}
+		}
+	}
+	return mn, mx
+}
+
+func rescaleU8(v, srcMin, srcMax, dstMin, dstMax uint8) uint8 {
+	rng := srcMax - srcMin
+	if rng == 0 {
+		rng = 1
+	}
+	return uint8(float64(v-srcMin)*float64(dstMax-dstMin)/float64(rng) + float64(dstMin))
+}
+
 func complexFromPolar(angle float64) complex64 {
 	sin, cos := math.Sincos(angle)
 	return complex(float32(cos), float32(sin))
