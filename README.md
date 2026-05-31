@@ -137,6 +137,7 @@ func main() {
 | `ColorToAlpha(col color.RGBA, tolerance float32)` | Set matching color to transparent |
 | `RemoveAlpha()` | Set alpha to 255 |
 | `AlphaToColor(bg color.RGBA)` | Replace transparency by compositing over a solid background |
+| `AlphaToColor(bg color.RGBA)` | replaces transparency with a solid background |
 
 ### Conversion (from image to data)
 

@@ -443,6 +443,30 @@ func TestColorToAlpha(t *testing.T) {
 	}
 }
 
+func TestAlphaToColor(t *testing.T) {
+	t.Parallel()
+	setupTest(t)
+
+	logo, err := ximg.Load("testdata/logo.png")
+	require.NoError(t, err)
+
+	res := logo.AlphaToColor(color.RGBA{255, 0, 0, 255})
+	err = res.Save("output/logo_AlphaToColor.png", 90)
+	require.NoError(t, err)
+}
+
+func TestRemoveAlpha(t *testing.T) {
+	t.Parallel()
+	setupTest(t)
+
+	logo, err := ximg.Load("testdata/logo.png")
+	require.NoError(t, err)
+
+	res := logo.RemoveAlpha()
+	err = res.Save("output/logo_AlphaToColor.png", 90)
+	require.NoError(t, err)
+}
+
 func TestConcatV(t *testing.T) {
 	t.Parallel()
 	setupTest(t)

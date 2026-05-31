@@ -326,6 +326,21 @@ func (img *Ximg) ColorToAlpha(col color.RGBA, tolerance float32) *Ximg {
 	return ximg
 }
 
+// AlphaToColor replaces transparency with a solid background color using alpha blending.
+func (img *Ximg) AlphaToColor(bg color.RGBA) *Ximg {
+	f := func(src *Ximg, dst *Ximg, x int, y int) {
+		r, g, b, a := src.RGBAAt(x, y)
+		af := float64(a) / 255
+		nr := uint8(float64(bg.R)*(1-af) + float64(r)*af)
+		ng := uint8(float64(bg.G)*(1-af) + float64(g)*af)
+		nb := uint8(float64(bg.B)*(1-af) + float64(b)*af)
+		dst.Set(x, y, color.RGBA{nr, ng, nb, 255})
+	}
+	ximg := img.Apply(1, f, nil)
+
+	return ximg
+}
+
 // RemoveAlpha removes the alpha channel.
 func (img *Ximg) RemoveAlpha() *Ximg {
 	f := func(src *Ximg, dst *Ximg, x int, y int) {
