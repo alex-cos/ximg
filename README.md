@@ -132,7 +132,7 @@ func main() {
 | `Hue(shift float64)` | Shift hue by angle in degrees |
 | `MaxPool(size int)` | Max pooling downsampling |
 | `Split(width, shift int)` | Split into overlapping tiles |
-| `Merge(other *Ximg)` | Blend two images |
+| `Merge(with *Ximg, factor float64)` | Blend two images with factor in [0,1] applied to `with` |
 | `Fuzion(x, y int, with *Ximg)` | Overlay `with` at position (x, y) with alpha compositing |
 | `ColorToAlpha(col color.RGBA, tolerance float32)` | Set matching color to transparent |
 | `RemoveAlpha()` | Set alpha to 255 |

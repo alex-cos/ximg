@@ -283,15 +283,29 @@ func TestMerge(t *testing.T) {
 	t.Parallel()
 	setupTest(t)
 
-	img1, err := ximg.Load("testdata/img_02.jpg")
+	var tests = []struct {
+		filename string
+		factor   float64
+	}{
+		{"img_03.jpg", 0.5},
+		{"img_03.jpg", 0.25},
+	}
+
+	img, err := ximg.Load("testdata/img_02.jpg")
 	require.NoError(t, err)
 
-	img2, err := ximg.Load("testdata/img_03.jpg")
-	require.NoError(t, err)
+	for _, test := range tests {
+		ext := filepath.Ext(test.filename)
+		infile := filepath.Join("testdata", test.filename)
+		outfile := fmt.Sprintf("%s_merge_%.2f%s", "img_02", test.factor, ext)
+		out := filepath.Join("output", outfile)
+		img2, err := ximg.Load(infile)
+		require.NoError(t, err)
 
-	res := img1.Merge(img2)
-	err = res.Save("output/merge.jpg", 90)
-	require.NoError(t, err)
+		res := img.Merge(img2, test.factor)
+		err = res.Save(out, 90)
+		require.NoError(t, err)
+	}
 }
 
 func TestFuzion(t *testing.T) {

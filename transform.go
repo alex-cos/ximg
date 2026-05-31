@@ -213,8 +213,13 @@ func (img *Ximg) Normalize(minimum, maximum uint8) *Ximg {
 	return ximg
 }
 
-// Merge blends two images by averaging each channel.
-func (img *Ximg) Merge(with *Ximg) *Ximg {
+// Merge blends two images with a factor in [0, 1] applied to `with`.
+func (img *Ximg) Merge(with *Ximg, factor float64) *Ximg {
+	if factor < 0 {
+		factor = 0
+	} else if factor > 1 {
+		factor = 1
+	}
 	w, h := img.Size()
 	ximg := NewRGBA(w, h)
 
@@ -223,10 +228,10 @@ func (img *Ximg) Merge(with *Ximg) *Ximg {
 			r1, g1, b1, a1 := img.RGBAAt(x, y)
 			r2, g2, b2, a2 := with.RGBAAt(x, y)
 			color := color.RGBA{
-				uint8((float64(r1) + float64(r2)) / 2),
-				uint8((float64(g1) + float64(g2)) / 2),
-				uint8((float64(b1) + float64(b2)) / 2),
-				uint8((float64(a1) + float64(a2)) / 2),
+				uint8(float64(r1)*(1-factor) + float64(r2)*factor),
+				uint8(float64(g1)*(1-factor) + float64(g2)*factor),
+				uint8(float64(b1)*(1-factor) + float64(b2)*factor),
+				uint8(float64(a1)*(1-factor) + float64(a2)*factor),
 			}
 			ximg.Set(x, y, color)
 		}
