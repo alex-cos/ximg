@@ -9,6 +9,8 @@
 
 Image processing library for Go, built on top of `image.RGBA`.
 
+![ximg](/ximg.png)
+
 ## Features
 
 - **Filters**: blur, sharpen, Gaussian, edge detection, Sobel operators (3×3 and 5×5)
@@ -134,6 +136,7 @@ func main() {
 | `Fuzion(x, y int, with *Ximg)` | Overlay `with` at position (x, y) with alpha compositing |
 | `ColorToAlpha(col color.RGBA, tolerance float32)` | Set matching color to transparent |
 | `RemoveAlpha()` | Set alpha to 255 |
+| `AlphaToColor(bg color.RGBA)` | Replace transparency by compositing over a solid background |
 
 ### Conversion (from image to data)
 
