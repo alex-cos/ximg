@@ -134,6 +134,7 @@ func main() {
 | `Split(width, shift int)` | Split into overlapping tiles |
 | `Merge(with *Ximg, factor float64)` | Blend two images with factor in [0,1] applied to `with` |
 | `Fuzion(x, y int, with *Ximg)` | Overlay `with` at position (x, y) with alpha compositing |
+| `Rotate(angle float64)` | Rotate counterclockwise by angle in degrees (transparent background) |
 | `ColorToAlpha(col color.RGBA, tolerance float32)` | Set matching color to transparent |
 | `RemoveAlpha()` | Set alpha to 255 |
 | `AlphaToColor(bg color.RGBA)` | Replace transparency by compositing over a solid background |

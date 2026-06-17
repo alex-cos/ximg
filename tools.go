@@ -146,3 +146,43 @@ func complexFromPolar(angle float64) complex64 {
 	sin, cos := math.Sincos(angle)
 	return complex(float32(cos), float32(sin))
 }
+
+func lerp(a, b, t float64) float64 {
+	return a*(1-t) + b*t
+}
+
+func bilinearSample(img *Ximg, sx, sy float64) (uint8, uint8, uint8, uint8) {
+	w, h := img.Size()
+	x0 := int(math.Floor(sx))
+	y0 := int(math.Floor(sy))
+	x1 := x0 + 1
+	y1 := y0 + 1
+
+	if x0 < 0 {
+		x0 = 0
+	}
+	if x1 >= w {
+		x1 = w - 1
+	}
+	if y0 < 0 {
+		y0 = 0
+	}
+	if y1 >= h {
+		y1 = h - 1
+	}
+
+	fx := sx - float64(x0)
+	fy := sy - float64(y0)
+
+	r00, g00, b00, a00 := img.RGBAAt(x0, y0)
+	r10, g10, b10, a10 := img.RGBAAt(x1, y0)
+	r01, g01, b01, a01 := img.RGBAAt(x0, y1)
+	r11, g11, b11, a11 := img.RGBAAt(x1, y1)
+
+	r := uint8(lerp(lerp(float64(r00), float64(r10), fx), lerp(float64(r01), float64(r11), fx), fy))
+	g := uint8(lerp(lerp(float64(g00), float64(g10), fx), lerp(float64(g01), float64(g11), fx), fy))
+	b := uint8(lerp(lerp(float64(b00), float64(b10), fx), lerp(float64(b01), float64(b11), fx), fy))
+	a := uint8(lerp(lerp(float64(a00), float64(a10), fx), lerp(float64(a01), float64(a11), fx), fy))
+
+	return r, g, b, a
+}

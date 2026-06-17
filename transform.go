@@ -306,6 +306,41 @@ func (img *Ximg) Hue(shift float64) *Ximg {
 	return ximg
 }
 
+// Rotate rotates the image by angle in degrees (counterclockwise) with transparent background.
+func (img *Ximg) Rotate(angle float64) *Ximg {
+	w, h := img.Size()
+	cx := float64(w-1) / 2
+	cy := float64(h-1) / 2
+
+	rad := angle * math.Pi / 180
+	cos := math.Cos(rad)
+	sin := math.Sin(rad)
+
+	nw := int(math.Ceil(math.Abs(cos)*float64(w) + math.Abs(sin)*float64(h)))
+	nh := int(math.Ceil(math.Abs(sin)*float64(w) + math.Abs(cos)*float64(h)))
+	ncx := float64(nw-1) / 2
+	ncy := float64(nh-1) / 2
+
+	dst := NewRGBA(nw, nh)
+
+	for y := range nh {
+		for x := range nw {
+			dx := float64(x) - ncx
+			dy := float64(y) - ncy
+			sx := cos*dx + sin*dy + cx
+			sy := -sin*dx + cos*dy + cy
+
+			if sx >= 0 && sx < float64(w) && sy >= 0 && sy < float64(h) {
+				r, g, b, a := bilinearSample(img, sx, sy)
+				dst.Set(x, y, color.RGBA{r, g, b, a})
+			}
+		}
+	}
+	dst.isGray = img.isGray
+
+	return dst
+}
+
 // ColorToAlpha sets pixels matching a target color to transparent within a tolerance in [0, 1].
 // Tolerance 0 matches the exact color; 1 matches everything.
 func (img *Ximg) ColorToAlpha(col color.RGBA, tolerance float32) *Ximg {

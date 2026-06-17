@@ -530,3 +530,30 @@ func TestConcatH(t *testing.T) {
 	err := res.Save(out, 90)
 	require.NoError(t, err)
 }
+
+func TestRotate(t *testing.T) {
+	t.Parallel()
+	setupTest(t)
+
+	var tests = []struct {
+		filename string
+		angle    float64
+	}{
+		{"img_01.jpg", 45},
+		{"img_02.jpg", 30},
+		{"img_03.jpg", -120},
+		{"logo.png", 90},
+	}
+	for i, test := range tests {
+		ext := filepath.Ext(test.filename)
+		infile := filepath.Join("testdata", test.filename)
+		outfile := fmt.Sprintf("%s_rotate_%d%s", strings.ReplaceAll(test.filename, ext, ""), i, ".png")
+		out := filepath.Join("output", outfile)
+		img, err := ximg.Load(infile)
+		require.NoError(t, err)
+
+		res := img.Rotate(test.angle)
+		err = res.Save(out, 90)
+		require.NoError(t, err)
+	}
+}
